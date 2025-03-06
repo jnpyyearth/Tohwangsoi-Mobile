@@ -12,6 +12,9 @@ constraintlayout = "2.2.0"
 firebaseBom = "33.9.0"
 googleServices = "4.4.2"
 
+firebase-auth = "22.1.2"
+google-auth = "20.7.0"
+
 [libraries]
 firebase-firestore = { module = "com.google.firebase:firebase-firestore", version = "25.1.2" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics", version = "22.2.0" }
@@ -27,6 +30,9 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+
+google-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "google-auth" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

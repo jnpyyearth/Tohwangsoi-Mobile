@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.tohwangsoi_mobile"
-        minSdk = 35
+        minSdk = 34
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -34,6 +34,10 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+    buildFeatures {
+        viewBinding = true
+    }
+
 }
 
 dependencies {
@@ -48,6 +52,9 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     implementation(platform(libs.firebase.bom))
 
+    // Firebase BoM (Bill of Materials)
+    implementation(platform(libs.firebase.bom))
+
     // Firebase core features
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.auth)
@@ -57,4 +64,8 @@ dependencies {
 
     // Cloud Firestore
     implementation(libs.firebase.firestore)
+
+    implementation(libs.firebase.auth)
+    implementation(libs.google.auth)
+
 }

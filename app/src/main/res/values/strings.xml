@@ -24,4 +24,13 @@
     <string name="login_with_google">Login with Google</string>
     <string name="login_with_facebook">Login with Facebook</string>
     <string name="login_with_twitter">Login with Twitter</string>
+
+    <string name="nav_home">Home</string>
+    <string name="nav_myorder">Myorder</string>
+    <string name="nav_menu">Menu</string>
+    <string name="nav_order">Order</string>
+    <string name="navigation_drawer_open">Open</string>
+    <string name="navigation_drawer_close">Close</string>
+
+
 </resources>

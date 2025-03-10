@@ -17,6 +17,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
+    private val db = FirebaseFirestore.getInstance()
 
     companion object {
         private const val RC_SIGN_IN = 9001
@@ -28,6 +29,7 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         auth = FirebaseAuth.getInstance()
+
         setupViews()
         initGoogleSignIn()
 
@@ -87,7 +89,7 @@ class LoginActivity : AppCompatActivity() {
         val email = binding.etEmail.text.toString().trim()
         val password = binding.etPassword.text.toString()
 
-        val db = FirebaseFirestore.getInstance()
+
         db.collection("users")
             .whereEqualTo("email", email)
             .get()
@@ -97,7 +99,7 @@ class LoginActivity : AppCompatActivity() {
                     val storedPassword = document.getString("password")
 
                     if (storedPassword == password) {
-                        // รหัสตรง
+                        //
                         val role = document.getString("role")
                         if (role == "customer") {
                             navigateToMainActivity()

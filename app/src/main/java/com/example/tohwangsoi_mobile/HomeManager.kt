@@ -38,12 +38,6 @@ class HomeManager : AppCompatActivity() {
             showAddMenuDialog()
         }
 
-        // ปุ่ม Logout
-        val btnLogout = findViewById<Button>(R.id.btnLogout)
-        btnLogout.setOnClickListener {
-            logoutUser()
-        }
-
         database = Firebase.firestore
     }
 

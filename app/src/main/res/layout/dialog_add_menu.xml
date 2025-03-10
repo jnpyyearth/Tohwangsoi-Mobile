@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/editTextMenuName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="ชื่อเมนู" />
+
+    <ImageView
+        android:id="@+id/imageViewMenu"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:scaleType="centerCrop"
+        android:background="@android:color/darker_gray"
+        android:contentDescription="Menu Image" />
+
+    <Button
+        android:id="@+id/buttonSelectImage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="เลือกรูป" />
+
+    <RadioGroup
+        android:id="@+id/radioGroupCategory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/radioAppetizer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="เรียกน้ำย่อย" />
+
+        <RadioButton
+            android:id="@+id/radioMainCourse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="จานหลัก" />
+
+        <RadioButton
+            android:id="@+id/radioDessert"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ของหวาน" />
+
+        <RadioButton
+            android:id="@+id/radioDrink"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="เครื่องดื่ม" />
+    </RadioGroup>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end">
+
+        <Button
+            android:id="@+id/buttonCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ยกเลิก" />
+
+        <Button
+            android:id="@+id/buttonConfirm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ยืนยัน" />
+    </LinearLayout>
+
+</LinearLayout>

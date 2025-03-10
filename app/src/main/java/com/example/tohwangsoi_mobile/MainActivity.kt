@@ -5,10 +5,12 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.navigation.NavigationView
+import androidx.appcompat.widget.Toolbar
+import androidx.core.view.GravityCompat
+import androidx.appcompat.app.ActionBarDrawerToggle
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
@@ -19,37 +21,42 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("Firestore", "🛠️ Checking Firestore Connection...")
-        enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
+        val navView: NavigationView = findViewById(R.id.nav_view)
+        val toolbar: Toolbar = findViewById(R.id.toolbar)
 
-        checkFirestoreConnection()
+        // ตั้งค่า Toolbar ให้เป็น ActionBar
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeButtonEnabled(true)
 
-        val btnLogout = findViewById<Button>(R.id.btnLogout)
+        // สร้าง ActionBarDrawerToggle
+        val toggle = ActionBarDrawerToggle(
+            this, drawerLayout, toolbar,
+            R.string.navigation_drawer_open,
+            R.string.navigation_drawer_close
+        )
+        drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+
+        // หา Header View ของ NavigationView
+        val headerView = navView.getHeaderView(0)
+        val btnLogout: Button = headerView.findViewById(R.id.btnLogout)
+        // ตั้งค่าปุ่ม Logout
         btnLogout.setOnClickListener {
             logoutUser()
         }
     }
 
-    private fun checkFirestoreConnection() {
-        db.collection("test_connection").document("dummy").get()
-            .addOnSuccessListener { document ->
-                if (document.exists()) {
-                    val status = document.getString("status") ?: "No status field"
-                    Log.d("Firestore", "✅ Firestore connected successfully! Status: $status")
-                } else {
-                    Log.e("Firestore", "⚠️ Document does not exist!")
-                }
-            }
-            .addOnFailureListener { e ->
-                Log.e("Firestore", "❌ Firestore connection failed", e)
-            }
+    override fun onBackPressed() {
+        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START)
+        } else {
+            super.onBackPressed()
+        }
     }
 
     private fun logoutUser() {
@@ -65,5 +72,4 @@ class MainActivity : AppCompatActivity() {
             finish()
         }
     }
-
 }

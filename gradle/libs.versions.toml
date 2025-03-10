@@ -14,6 +14,8 @@ googleServices = "4.4.2"
 
 firebase-auth = "22.1.2"
 google-auth = "20.7.0"
+firebaseFirestoreKtx = "25.1.2"
+firebaseInappmessaging = "21.0.1"
 
 [libraries]
 firebase-firestore = { module = "com.google.firebase:firebase-firestore", version = "25.1.2" }
@@ -32,6 +34,8 @@ androidx-activity = { group = "androidx.activity", name = "activity", version.re
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 
 google-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "google-auth" }
+firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
+firebase-inappmessaging = { group = "com.google.firebase", name = "firebase-inappmessaging", version.ref = "firebaseInappmessaging" }
 
 
 [plugins]

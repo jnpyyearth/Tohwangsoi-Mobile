@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.tohwangsoi_mobile"
-        minSdk = 34
+        minSdk = 31
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -49,6 +49,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.firebase.firestore.ktx)
     implementation(libs.firebase.inappmessaging)
+    implementation(libs.firebase.storage.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -69,5 +70,8 @@ dependencies {
 
     implementation(libs.firebase.auth)
     implementation(libs.google.auth)
+
+    //ซน
+    implementation(libs.google.firebase.storage)
 
 }

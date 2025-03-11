@@ -1,5 +1,6 @@
 package com.example.tohwangsoi_mobile
 
+import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -10,15 +11,29 @@ import com.google.android.material.navigation.NavigationView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.appcompat.app.ActionBarDrawerToggle
+import com.example.tohwangsoi_mobile.databinding.DialogAddMenuBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.firebase.Firebase
+import com.google.firebase.FirebaseApp
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.firestore
 
 class HomeManager : AppCompatActivity() {
 
+    private lateinit var database: FirebaseFirestore
+    private lateinit var auth: FirebaseAuth
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.manager_home)
+
+        //firebase
+        FirebaseApp.initializeApp(this)
+
 
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout_manager)
         val navView: NavigationView = findViewById(R.id.nav_view_manager)
@@ -35,6 +50,7 @@ class HomeManager : AppCompatActivity() {
             R.string.navigation_drawer_open,
             R.string.navigation_drawer_close
         )
+
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
@@ -46,6 +62,14 @@ class HomeManager : AppCompatActivity() {
         btnLogout.setOnClickListener {
             logoutUser()
         }
+
+        val buttonAdd = findViewById<FloatingActionButton>(R.id.buttonAdd)
+        buttonAdd.setOnClickListener {
+            showAddMenuDialog()
+        }
+
+        database = Firebase.firestore
+
     }
 
     override fun onBackPressed() {
@@ -70,4 +94,71 @@ class HomeManager : AppCompatActivity() {
             finish()
         }
     }
+
+    private fun showAddMenuDialog() {
+        val dialog = Dialog(this)
+        val dialogBinding = DialogAddMenuBinding.inflate(layoutInflater)
+        dialog.setContentView(dialogBinding.root) // Set the content of the dialog
+
+        dialog.setCancelable(true)
+
+        dialogBinding.buttonSelectImage.setOnClickListener {
+            Toast.makeText(this, "กรุณากรอก URL ของรูปภาพ", Toast.LENGTH_SHORT).show()
+        }
+
+        dialogBinding.buttonCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialogBinding.buttonConfirm.setOnClickListener {
+            val menuName = dialogBinding.editTextMenuName.text.toString().trim()
+            val selectedCategoryId = dialogBinding.radioGroupCategory.checkedRadioButtonId
+            var category = ""
+
+            when (selectedCategoryId) {
+                R.id.radioAppetizer -> category = "เรียกน้ำย่อย"
+                R.id.radioMainCourse -> category = "จานหลัก"
+                R.id.radioDessert -> category = "ของหวาน"
+                R.id.radioDrink -> category = "เครื่องดื่ม"
+            }
+
+            val imageUrl = dialogBinding.editTextImageLink.text.toString().trim() // รับ URL ของรูปภาพ
+
+            if (menuName.isEmpty()) {
+                Toast.makeText(this, "กรุณากรอกชื่อเมนู", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (category.isEmpty()) {
+                Toast.makeText(this, "กรุณาเลือกประเภทเมนู", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (imageUrl.isEmpty()) {
+                Toast.makeText(this, "กรุณากรอกลิงก์รูปภาพ", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // Save to Firestore
+            val datamenu = hashMapOf(
+                "MenuName" to menuName,
+                "Category" to category,
+                "Image" to imageUrl, // Save the image URL
+                "timestamp" to FieldValue.serverTimestamp(),
+            )
+
+            database.collection("Menu")
+                .add(datamenu)
+                .addOnSuccessListener {
+                    Toast.makeText(this, "เมนูบันทึกสำเร็จ", Toast.LENGTH_SHORT).show()
+                    dialog.dismiss()
+                }
+                .addOnFailureListener { e ->
+                    Toast.makeText(this, "ไม่สามารถบันทึกเมนูได้: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+        }
+
+        dialog.show()
+    }
+
 }

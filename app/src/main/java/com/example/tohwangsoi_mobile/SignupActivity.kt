@@ -12,11 +12,14 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 import com.example.tohwangsoi_mobile.databinding.ActivitySignupBinding
 import java.util.UUID
+import com.google.firebase.auth.FirebaseAuth
+
 
 class SignupActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySignupBinding
     private lateinit var database: FirebaseFirestore
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,13 +27,13 @@ class SignupActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // Initialize Firebase
-        database = Firebase.firestore
+        database = FirebaseFirestore.getInstance()
+        auth = FirebaseAuth.getInstance()
 
         setupViews()
     }
 
     private fun setupViews() {
-        // Set up signup button click listener
         binding.btnSignup.setOnClickListener {
             if (validateInputs()) {
                 // Perform signup operation
@@ -38,9 +41,7 @@ class SignupActivity : AppCompatActivity() {
             }
         }
 
-        // Set up login text click listener
         binding.tvLogin.setOnClickListener {
-            // Navigate to Login Activity
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
         }
@@ -112,35 +113,48 @@ class SignupActivity : AppCompatActivity() {
         val email = binding.etEmail.text
         val password = binding.etPassword.text
 
-        // Create post object
-        val user = hashMapOf(
-            "id" to UUID.randomUUID().toString(), // or you can use DocumentReference id later
-            "fullName" to fullName.toString().trim(),
-            "email" to email.toString().trim(),
-            "password" to password.toString().trim(),
-            "timestamp" to FieldValue.serverTimestamp(),
-            "role" to "customer"
-        )
+        // Create user in Firebase Authentication
+        auth.createUserWithEmailAndPassword(email.toString(), password.toString())
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val userId = auth.currentUser?.uid
 
-        database.collection("users")
-            .add(user)
-            .addOnSuccessListener {
-                showLoading(false)
-                Toast.makeText(this, "User Registration successfully", Toast.LENGTH_SHORT).show()
+                    // Create user data for Firestore
+                    val user = hashMapOf(
+                        "userId" to userId,
+                        "fullName" to fullName.toString().trim(),
+                        "email" to email.toString().trim(),
+                        "password" to password.toString().trim(),
+                        "timestamp" to FieldValue.serverTimestamp(),
+                        "role" to "customer"
+                    )
 
-                // Navigate to Main Activity or Login Activity
-                startActivity(Intent(this, LoginActivity::class.java))
-                finish()
-            }
-            .addOnFailureListener { e ->
-                showLoading(false)
-                Toast.makeText(this, "Failed to add new user: ${e.message}", Toast.LENGTH_SHORT)
-                    .show()
+                    // Save user data in Firestore
+                    if (userId != null) {
+                        database.collection("users").document(userId)
+                            .set(user)
+                            .addOnSuccessListener {
+                                showLoading(false)
+                                Toast.makeText(this, "User Registration successfully", Toast.LENGTH_SHORT).show()
+
+                                // Navigate to Login Activity
+                                startActivity(Intent(this, LoginActivity::class.java))
+                                finish()
+                            }
+                            .addOnFailureListener { e ->
+                                showLoading(false)
+                                Toast.makeText(this, "Failed to add new user: ${e.message}", Toast.LENGTH_SHORT)
+                                    .show()
+                            }
+                    }
+                } else {
+                    showLoading(false)
+                    Toast.makeText(this, "Sign up failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                }
             }
     }
 
     private fun showLoading(show: Boolean) {
         binding.signUpProgress.visibility = if (show) View.VISIBLE else View.GONE
     }
-
 }

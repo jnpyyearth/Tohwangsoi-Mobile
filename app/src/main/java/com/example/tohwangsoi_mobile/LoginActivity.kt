@@ -2,6 +2,7 @@ package com.example.tohwangsoi_mobile
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.util.Patterns
 import android.view.View
 import android.widget.Toast
@@ -11,12 +12,15 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.*
 import com.google.firebase.firestore.FirebaseFirestore
 import com.example.tohwangsoi_mobile.databinding.ActivityLoginBinding
+import com.google.firebase.firestore.FieldValue
+import java.util.UUID
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
+    private val db = FirebaseFirestore.getInstance()
 
     companion object {
         private const val RC_SIGN_IN = 9001
@@ -28,22 +32,15 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         auth = FirebaseAuth.getInstance()
-        setupViews()
-        initGoogleSignIn()
+        googleSignInClient = GoogleSignIn.getClient(
+            this, GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build()
+        )
 
-        val user = FirebaseAuth.getInstance().currentUser
-        if (user != null) {
-            // ถ้าเคย Login แล้ว ให้ไปหน้า MainActivity
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
-        }
-    }
-
-    private fun setupViews() {
         binding.btnLogin.setOnClickListener {
-            if (validateInputs()) {
-                performLogin()
-            }
+            performLogin()
         }
 
         binding.tvSignup.setOnClickListener {
@@ -52,104 +49,76 @@ class LoginActivity : AppCompatActivity() {
         }
 
         binding.btnGoogleLogin.setOnClickListener {
-            performGoogleLogin()
+            val signInIntent = googleSignInClient.signInIntent
+            startActivityForResult(signInIntent, RC_SIGN_IN)
         }
     }
 
-    private fun validateInputs(): Boolean {
-        var isValid = true
-
+    private fun performLogin() {
         val email = binding.etEmail.text.toString().trim()
+        val password = binding.etPassword.text.toString()
+
         if (email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             binding.tilEmail.error = "Please enter a valid email"
-            isValid = false
+            return
         } else {
             binding.tilEmail.error = null
         }
 
-        val password = binding.etPassword.text.toString()
         if (password.isEmpty()) {
             binding.tilPassword.error = "Please enter your password"
-            isValid = false
+            return
         } else {
             binding.tilPassword.error = null
         }
 
-        return isValid
-    }
-
-    // checklogin
-    private fun performLogin() {
         binding.btnLogin.isEnabled = false
         binding.btnLogin.text = "Logging in..."
         binding.progressBar.visibility = View.VISIBLE
 
-        val email = binding.etEmail.text.toString().trim()
-        val password = binding.etPassword.text.toString()
+        // เช็ค email ใน Firebase Authentication
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val userId = auth.currentUser?.uid
+                    if (userId != null) {
+                        // ตรวจสอบ email ใน Firestore
+                        db.collection("users").document(userId)
+                            .get()
+                            .addOnSuccessListener { document ->
+                                if (document.exists()) {
+                                    val fullName = document.getString("fullName") ?: "Unknown"
+                                    val role = document.getString("role") ?: "customer"
 
-        val db = FirebaseFirestore.getInstance()
-        db.collection("users")
-            .whereEqualTo("email", email)
-            .get()
-            .addOnSuccessListener { querySnapshot ->
-                if (!querySnapshot.isEmpty) {
-                    val document = querySnapshot.documents[0]
-                    val storedPassword = document.getString("password")
+                                    val intent = when (role) {
+                                        "manager" -> Intent(this, HomeManager::class.java)
+                                        else -> Intent(this, MainActivity::class.java)
+                                    }
 
-                    if (storedPassword == password) {
-                        // รหัสตรง
-                        val role = document.getString("role")
-                        if (role == "customer") {
-                            navigateToMainActivity()
-                        } else if (role == "manager") {
-                            navigateToManagerActivity()
-                        } else {
-                            Toast.makeText(this, "Unknown role", Toast.LENGTH_SHORT).show()
-                        }
-                    } else {
-                        // ถ้ารหัสผ่านไม่ตรง
-                        Toast.makeText(this, "Incorrect password", Toast.LENGTH_SHORT).show()
+                                    intent.putExtra("USER_NAME", fullName)
+                                    intent.putExtra("USER_EMAIL", email)
+                                    startActivity(intent)
+                                    finish()
+                                } else {
+                                    // ถ้าไม่มีข้อมูลใน Firestore
+                                    showToast("User data not found in Firestore")
+                                }
+                            }
+                            .addOnFailureListener { e ->
+                                showToast("Failed to load user info: ${e.message}")
+                            }
                     }
                 } else {
-                    Toast.makeText(this, "No such user found", Toast.LENGTH_SHORT).show()
+                    showToast("Login failed: ${task.exception?.message}")
+                    binding.btnLogin.isEnabled = true
+                    binding.btnLogin.text = getString(R.string.login)
+                    binding.progressBar.visibility = View.GONE
                 }
-                binding.progressBar.visibility = View.GONE
-                binding.btnLogin.isEnabled = true
-                binding.btnLogin.text = "Login"
             }
-            .addOnFailureListener {
-                Toast.makeText(this, "Error fetching user", Toast.LENGTH_SHORT).show()
-                binding.progressBar.visibility = View.GONE
-                binding.btnLogin.isEnabled = true
-                binding.btnLogin.text = "Login"
-            }
+
     }
 
-    private fun navigateToMainActivity() {
-        startActivity(Intent(this, MainActivity::class.java))
-        finish()
-    }
 
-    private fun navigateToManagerActivity() {
-        startActivity(Intent(this, HomeManager::class.java))
-        finish()
-    }
-
-    // Login with google
-
-    private fun initGoogleSignIn() {
-        googleSignInClient = GoogleSignIn.getClient(
-            this, GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build()
-        )
-    }
-
-    private fun performGoogleLogin() {
-        val signInIntent = googleSignInClient.signInIntent
-        startActivityForResult(signInIntent, RC_SIGN_IN)
-    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -175,5 +144,15 @@ class LoginActivity : AppCompatActivity() {
                     Toast.makeText(this, "Error logging in", Toast.LENGTH_SHORT).show()
                 }
             }
+    }
+
+    private fun navigateToMainActivity() {
+        startActivity(Intent(this, MainActivity::class.java))
+        finish()
+    }
+
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }

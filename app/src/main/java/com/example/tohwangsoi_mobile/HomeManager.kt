@@ -11,6 +11,7 @@ import com.google.android.material.navigation.NavigationView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.fragment.app.Fragment
 import com.example.tohwangsoi_mobile.databinding.DialogAddMenuBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -70,6 +71,16 @@ class HomeManager : AppCompatActivity() {
 
         database = Firebase.firestore
 
+        navView.setNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.nav_addmenu -> replaceFragment(AddmenuFragment())
+                R.id.nav_menu -> replaceFragment(MenuFragment())
+                R.id.nav_addmanager -> replaceFragment(AddManagerFragment())
+                R.id.nav_order -> replaceFragment(OrderFragment())
+            }
+            drawerLayout.closeDrawer(GravityCompat.START)
+            true
+        }
     }
 
     override fun onBackPressed() {
@@ -160,5 +171,13 @@ class HomeManager : AppCompatActivity() {
 
         dialog.show()
     }
+
+    private fun replaceFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .addToBackStack(null)
+            .commit()
+    }
+
 
 }

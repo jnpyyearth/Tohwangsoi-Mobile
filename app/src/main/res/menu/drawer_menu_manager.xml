@@ -3,9 +3,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_home"
-            android:icon="@drawable/ic_home"
-            android:title="@string/nav_home"
+            android:id="@+id/nav_addmenu"
+            android:icon="@drawable/ic_addmenu"
+            android:title="@string/nav_addmenu"
             />
 
         <item
@@ -15,9 +15,16 @@
             />
 
         <item
+            android:id="@+id/nav_addmanager"
+            android:icon="@drawable/ic_addpeople"
+            android:title="@string/nav_addmanager"
+            />
+
+        <item
             android:id="@+id/nav_order"
             android:icon="@drawable/ic_order"
             android:title="@string/nav_order"
             />
+
     </group>
 </menu>

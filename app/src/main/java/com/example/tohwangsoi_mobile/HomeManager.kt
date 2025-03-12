@@ -3,6 +3,7 @@ package com.example.tohwangsoi_mobile
 import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -12,6 +13,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.RecyclerView
 import com.example.tohwangsoi_mobile.databinding.DialogAddMenuBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -27,6 +29,8 @@ class HomeManager : AppCompatActivity() {
 
     private lateinit var database: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
+    private lateinit var buttonAdd: FloatingActionButton
+    private lateinit var recyclerView: RecyclerView
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -39,6 +43,8 @@ class HomeManager : AppCompatActivity() {
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout_manager)
         val navView: NavigationView = findViewById(R.id.nav_view_manager)
         val toolbar: Toolbar = findViewById(R.id.toolbar_manager)
+        buttonAdd = findViewById(R.id.buttonAdd)
+        recyclerView = findViewById(R.id.recyclerView)
 
         // ตั้งค่า Toolbar ให้เป็น ActionBar
         setSupportActionBar(toolbar)
@@ -51,17 +57,19 @@ class HomeManager : AppCompatActivity() {
             R.string.navigation_drawer_open,
             R.string.navigation_drawer_close
         )
-
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
 
         // หา Header View ของ NavigationView
         val headerView = navView.getHeaderView(0)
         val btnLogout: Button = headerView.findViewById(R.id.btnLogout)
-
         // ตั้งค่าปุ่ม Logout
         btnLogout.setOnClickListener {
             logoutUser()
+        }
+
+        buttonAdd.setOnClickListener {
+            replaceFragment(AddmenuFragment())
         }
 
         val buttonAdd = findViewById<FloatingActionButton>(R.id.buttonAdd)
@@ -83,6 +91,7 @@ class HomeManager : AppCompatActivity() {
         }
     }
 
+
     override fun onBackPressed() {
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout_manager)
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -94,11 +103,9 @@ class HomeManager : AppCompatActivity() {
 
     private fun logoutUser() {
         val googleSignInClient = GoogleSignIn.getClient(this, GoogleSignInOptions.DEFAULT_SIGN_IN)
-
         FirebaseAuth.getInstance().signOut()
         googleSignInClient.signOut().addOnCompleteListener {
             Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show()
-
             val intent = Intent(this, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
@@ -113,9 +120,6 @@ class HomeManager : AppCompatActivity() {
 
         dialog.setCancelable(true)
 
-        dialogBinding.buttonSelectImage.setOnClickListener {
-            Toast.makeText(this, "กรุณากรอก URL ของรูปภาพ", Toast.LENGTH_SHORT).show()
-        }
 
         dialogBinding.buttonCancel.setOnClickListener {
             dialog.dismiss()
@@ -177,7 +181,15 @@ class HomeManager : AppCompatActivity() {
             .replace(R.id.fragment_container, fragment)
             .addToBackStack(null)
             .commit()
-    }
 
+        // ✅ แสดง `buttonAdd` และ `recyclerView` เฉพาะที่หน้า AddMenuFragment
+        if (fragment is AddmenuFragment) {
+            buttonAdd.visibility = View.VISIBLE
+            recyclerView.visibility = View.VISIBLE
+        } else {
+            buttonAdd.visibility = View.GONE
+            recyclerView.visibility = View.GONE
+        }
+    }
 
 }

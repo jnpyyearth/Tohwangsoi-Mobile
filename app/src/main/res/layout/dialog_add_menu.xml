@@ -19,11 +19,6 @@
         android:hint="กรอก URL ของรูปภาพ"
         android:inputType="textUri" />
 
-    <Button
-        android:id="@+id/buttonSelectImage"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="เลือกรูป (กรอก URL)" />
 
     <RadioGroup
         android:id="@+id/radioGroupCategory"

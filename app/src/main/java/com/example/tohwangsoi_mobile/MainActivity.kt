@@ -11,6 +11,7 @@ import com.google.android.material.navigation.NavigationView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.fragment.app.Fragment
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
@@ -48,6 +49,17 @@ class MainActivity : AppCompatActivity() {
         btnLogout.setOnClickListener {
             logoutUser()
         }
+
+
+        navView.setNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.nav_home -> replaceFragment(HomeCustomerFragment())
+                R.id.nav_myorder -> replaceFragment(MyorderFragment())
+            }
+            drawerLayout.closeDrawer(GravityCompat.START)
+            true
+        }
+
     }
 
     override fun onBackPressed() {
@@ -71,5 +83,11 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
+    }
+
+    private fun replaceFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .commit()
     }
 }

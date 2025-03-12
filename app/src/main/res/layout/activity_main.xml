@@ -56,29 +56,7 @@
             android:id="@+id/fragment_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:translationX="-2dp">
-
-            <ImageView
-                android:id="@+id/imageView"
-                android:layout_width="456dp"
-                android:layout_height="664dp"
-                android:layout_margin="20dp"
-                android:translationX="-30dp"
-                android:translationY="100dp"
-                app:srcCompat="@mipmap/img_package2000_foreground"
-                tools:srcCompat="@mipmap/img_package2000_foreground" />
-
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="282dp"
-                android:layout_height="wrap_content"
-                android:rotationX="2"
-                android:text="Hello  Customer  welcome to Tohwangsoi"
-                android:translationX="80dp"
-                android:translationY="30dp" />
-
-
-        </FrameLayout>
+            android:translationX="-2dp"/>
 
     </LinearLayout>
 

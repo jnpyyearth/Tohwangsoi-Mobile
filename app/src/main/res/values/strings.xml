@@ -28,9 +28,15 @@
     <string name="nav_home">Home</string>
     <string name="nav_myorder">Myorder</string>
     <string name="nav_menu">Menu</string>
+    <string name="nav_addmenu">Add menu</string>
+    <string name="nav_addmanager">Add Manager</string>
     <string name="nav_order">Order</string>
     <string name="navigation_drawer_open">Open</string>
     <string name="navigation_drawer_close">Close</string>
+
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

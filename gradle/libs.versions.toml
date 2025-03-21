@@ -12,6 +12,14 @@ constraintlayout = "2.2.0"
 firebaseBom = "33.9.0"
 googleServices = "4.4.2"
 
+firebase-auth = "22.1.2"
+google-auth = "20.7.0"
+firebaseFirestoreKtx = "25.1.2"
+firebaseInappmessaging = "21.0.1"
+firebaseStorageKtx = "21.0.1"
+
+firebase-storage = "20.3.0"
+
 [libraries]
 firebase-firestore = { module = "com.google.firebase:firebase-firestore", version = "25.1.2" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics", version = "22.2.0" }
@@ -27,6 +35,14 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+
+google-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "google-auth" }
+firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
+firebase-inappmessaging = { group = "com.google.firebase", name = "firebase-inappmessaging", version.ref = "firebaseInappmessaging" }
+firebase-storage-ktx = { group = "com.google.firebase", name = "firebase-storage-ktx", version.ref = "firebaseStorageKtx" }
+
+google-firebase-storage = { module = "com.google.firebase:firebase-storage-ktx", version.ref = "firebase-storage" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

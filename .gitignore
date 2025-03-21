@@ -14,3 +14,7 @@
 .cxx
 local.properties
 app/google-services.json
+# Ignore all .idea/ except code style and run config
+.idea/*
+!.idea/codeStyles/
+!.idea/runConfigurations/

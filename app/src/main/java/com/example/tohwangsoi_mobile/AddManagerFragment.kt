@@ -1,59 +1,101 @@
 package com.example.tohwangsoi_mobile
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import androidx.appcompat.app.AlertDialog
+import com.example.tohwangsoi_mobile.databinding.FragmentAddManagerBinding
+import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FieldValue
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [AddManagerFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class AddManagerFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var binding: FragmentAddManagerBinding
+    private lateinit var buttonAdd: FloatingActionButton
+    private lateinit var auth: FirebaseAuth
+    private lateinit var database: FirebaseFirestore
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_addmanager, container, false)
+        binding = FragmentAddManagerBinding.inflate(inflater, container, false)
+
+        auth = FirebaseAuth.getInstance()
+        database = FirebaseFirestore.getInstance()
+
+        buttonAdd = binding.fabAddManager
+        buttonAdd.setOnClickListener {
+            showAddManagerDialog()
+        }
+
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment AddManagerFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            AddManagerFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+
+    private fun showAddManagerDialog() {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_add_manager, null)
+
+        // ตั้งค่า Dialog
+        val dialogBuilder = AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .setCancelable(true)
+            .setPositiveButton("Add") { _, _ ->
+                val fullName = dialogView.findViewById<TextInputEditText>(R.id.et_full_name).text.toString()
+                val email = dialogView.findViewById<TextInputEditText>(R.id.et_email).text.toString()
+                val password = dialogView.findViewById<TextInputEditText>(R.id.et_password).text.toString()
+
+                // ตรวจสอบข้อมูลและบันทึกข้อมูล
+                if (fullName.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()) {
+                    // ลงทะเบียนผู้ใช้ด้วย Firebase Authentication
+                    auth.createUserWithEmailAndPassword(email, password)
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                val userId = auth.currentUser?.uid
+
+                                // สร้างข้อมูลผู้ใช้เพื่อบันทึกใน Firestore
+                                val user = hashMapOf(
+                                    "userId" to userId,
+                                    "fullName" to fullName.trim(),
+                                    "email" to email.trim(),
+                                    "password" to password.trim(),
+                                    "timestamp" to FieldValue.serverTimestamp(),
+                                    "role" to "manager" // หรือ role อื่นๆ ที่คุณต้องการ
+                                )
+
+                                // บันทึกข้อมูลใน Firestore
+                                if (userId != null) {
+                                    database.collection("users").document(userId)
+                                        .set(user)
+                                        .addOnSuccessListener {
+                                            // แสดงข้อความเมื่อบันทึกข้อมูลสำเร็จ
+                                            Toast.makeText(context, "User registration successful", Toast.LENGTH_SHORT).show()
+                                        }
+                                        .addOnFailureListener { e ->
+                                            // แสดงข้อความเมื่อเกิดข้อผิดพลาด
+                                            Toast.makeText(context, "Failed to add new user: ${e.message}", Toast.LENGTH_SHORT).show()
+                                        }
+                                }
+                            } else {
+                                // ถ้าการลงทะเบียนไม่สำเร็จ
+                                Toast.makeText(context, "Sign up failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                } else {
+                    // ถ้าผู้ใช้กรอกข้อมูลไม่ครบ
+                    Toast.makeText(context, "กรุณากรอกข้อมูลให้ครบ", Toast.LENGTH_SHORT).show()
                 }
             }
+            .setNegativeButton("Cancel", null)
+
+        val alertDialog = dialogBuilder.create()
+        alertDialog.show()
     }
 }
+

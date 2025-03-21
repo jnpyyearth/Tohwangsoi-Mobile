@@ -13,7 +13,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.RecyclerView
 import com.example.tohwangsoi_mobile.databinding.DialogAddMenuBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -30,23 +29,21 @@ class HomeManager : AppCompatActivity() {
     private lateinit var database: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
     private lateinit var buttonAdd: FloatingActionButton
-    private lateinit var recyclerView: RecyclerView
-    override fun onCreate(savedInstanceState: Bundle?) {
 
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.manager_home)
 
-        //firebase
+        // Firebase
         FirebaseApp.initializeApp(this)
-
+        database = Firebase.firestore
 
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout_manager)
         val navView: NavigationView = findViewById(R.id.nav_view_manager)
         val toolbar: Toolbar = findViewById(R.id.toolbar_manager)
         buttonAdd = findViewById(R.id.buttonAdd)
-        recyclerView = findViewById(R.id.recyclerView)
 
-        // ตั้งค่า Toolbar ให้เป็น ActionBar
+        // ตั้งค่า Toolbar
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeButtonEnabled(true)
@@ -63,21 +60,16 @@ class HomeManager : AppCompatActivity() {
         // หา Header View ของ NavigationView
         val headerView = navView.getHeaderView(0)
         val btnLogout: Button = headerView.findViewById(R.id.btnLogout)
+
         // ตั้งค่าปุ่ม Logout
         btnLogout.setOnClickListener {
             logoutUser()
         }
 
-        buttonAdd.setOnClickListener {
-            replaceFragment(AddmenuFragment())
-        }
-
-        val buttonAdd = findViewById<FloatingActionButton>(R.id.buttonAdd)
+        // ปุ่มเพิ่มเมนู
         buttonAdd.setOnClickListener {
             showAddMenuDialog()
         }
-
-        database = Firebase.firestore
 
         navView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
@@ -89,7 +81,10 @@ class HomeManager : AppCompatActivity() {
             drawerLayout.closeDrawer(GravityCompat.START)
             true
         }
+
+
     }
+
 
 
     override fun onBackPressed() {
@@ -116,10 +111,8 @@ class HomeManager : AppCompatActivity() {
     private fun showAddMenuDialog() {
         val dialog = Dialog(this)
         val dialogBinding = DialogAddMenuBinding.inflate(layoutInflater)
-        dialog.setContentView(dialogBinding.root) // Set the content of the dialog
-
+        dialog.setContentView(dialogBinding.root)
         dialog.setCancelable(true)
-
 
         dialogBinding.buttonCancel.setOnClickListener {
             dialog.dismiss()
@@ -137,28 +130,17 @@ class HomeManager : AppCompatActivity() {
                 R.id.radioDrink -> category = "เครื่องดื่ม"
             }
 
-            val imageUrl = dialogBinding.editTextImageLink.text.toString().trim() // รับ URL ของรูปภาพ
+            val imageUrl = dialogBinding.editTextImageLink.text.toString().trim()
 
-            if (menuName.isEmpty()) {
-                Toast.makeText(this, "กรุณากรอกชื่อเมนู", Toast.LENGTH_SHORT).show()
+            if (menuName.isEmpty() || category.isEmpty() || imageUrl.isEmpty()) {
+                Toast.makeText(this, "กรุณากรอกข้อมูลให้ครบถ้วน", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            if (category.isEmpty()) {
-                Toast.makeText(this, "กรุณาเลือกประเภทเมนู", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            if (imageUrl.isEmpty()) {
-                Toast.makeText(this, "กรุณากรอกลิงก์รูปภาพ", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            // Save to Firestore
             val datamenu = hashMapOf(
                 "MenuName" to menuName,
                 "Category" to category,
-                "Image" to imageUrl, // Save the image URL
+                "Image" to imageUrl,
                 "timestamp" to FieldValue.serverTimestamp(),
             )
 
@@ -167,6 +149,7 @@ class HomeManager : AppCompatActivity() {
                 .addOnSuccessListener {
                     Toast.makeText(this, "เมนูบันทึกสำเร็จ", Toast.LENGTH_SHORT).show()
                     dialog.dismiss()
+                    // loadMenuData() // เอาออกไป
                 }
                 .addOnFailureListener { e ->
                     Toast.makeText(this, "ไม่สามารถบันทึกเมนูได้: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -182,14 +165,10 @@ class HomeManager : AppCompatActivity() {
             .addToBackStack(null)
             .commit()
 
-        // ✅ แสดง `buttonAdd` และ `recyclerView` เฉพาะที่หน้า AddMenuFragment
         if (fragment is AddmenuFragment) {
             buttonAdd.visibility = View.VISIBLE
-            recyclerView.visibility = View.VISIBLE
         } else {
             buttonAdd.visibility = View.GONE
-            recyclerView.visibility = View.GONE
         }
     }
-
 }

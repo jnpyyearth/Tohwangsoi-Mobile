@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.google.services)
+    id("kotlin-kapt")
 }
 
 android {
@@ -50,6 +51,8 @@ dependencies {
     implementation(libs.firebase.firestore.ktx)
     implementation(libs.firebase.inappmessaging)
     implementation(libs.firebase.storage.ktx)
+    implementation(libs.car.ui.lib)
+    implementation(libs.androidx.scenecore)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -73,5 +76,6 @@ dependencies {
 
     //ซน
     implementation(libs.google.firebase.storage)
-
+    implementation("com.github.bumptech.glide:glide:4.13.0")
+    kapt("com.github.bumptech.glide:compiler:4.13.0")
 }

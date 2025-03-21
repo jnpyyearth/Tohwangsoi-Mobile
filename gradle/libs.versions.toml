@@ -19,6 +19,8 @@ firebaseInappmessaging = "21.0.1"
 firebaseStorageKtx = "21.0.1"
 
 firebase-storage = "20.3.0"
+carUiLib = "2.6.0"
+scenecore = "1.0.0-alpha03"
 
 [libraries]
 firebase-firestore = { module = "com.google.firebase:firebase-firestore", version = "25.1.2" }
@@ -42,6 +44,8 @@ firebase-inappmessaging = { group = "com.google.firebase", name = "firebase-inap
 firebase-storage-ktx = { group = "com.google.firebase", name = "firebase-storage-ktx", version.ref = "firebaseStorageKtx" }
 
 google-firebase-storage = { module = "com.google.firebase:firebase-storage-ktx", version.ref = "firebase-storage" }
+car-ui-lib = { group = "com.android.car.ui", name = "car-ui-lib", version.ref = "carUiLib" }
+androidx-scenecore = { group = "androidx.xr.scenecore", name = "scenecore", version.ref = "scenecore" }
 
 
 [plugins]

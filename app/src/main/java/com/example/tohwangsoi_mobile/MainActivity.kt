@@ -59,6 +59,9 @@ class MainActivity : AppCompatActivity() {
             drawerLayout.closeDrawer(GravityCompat.START)
             true
         }
+        if (savedInstanceState == null) {
+            replaceFragment(HomeCustomerFragment()) // หรือ Fragment ที่ต้องการให้แสดงเป็นหน้าแรก
+        }
 
     }
 
@@ -85,7 +88,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun replaceFragment(fragment: Fragment) {
+    public fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
             .commit()

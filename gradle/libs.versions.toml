@@ -21,6 +21,7 @@ firebaseStorageKtx = "21.0.1"
 firebase-storage = "20.3.0"
 carUiLib = "2.6.0"
 scenecore = "1.0.0-alpha03"
+navigationFragmentKtx = "2.8.9"
 
 [libraries]
 firebase-firestore = { module = "com.google.firebase:firebase-firestore", version = "25.1.2" }
@@ -46,6 +47,7 @@ firebase-storage-ktx = { group = "com.google.firebase", name = "firebase-storage
 google-firebase-storage = { module = "com.google.firebase:firebase-storage-ktx", version.ref = "firebase-storage" }
 car-ui-lib = { group = "com.android.car.ui", name = "car-ui-lib", version.ref = "carUiLib" }
 androidx-scenecore = { group = "androidx.xr.scenecore", name = "scenecore", version.ref = "scenecore" }
+androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
 
 
 [plugins]

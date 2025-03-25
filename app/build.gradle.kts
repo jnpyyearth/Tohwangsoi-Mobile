@@ -53,6 +53,7 @@ dependencies {
     implementation(libs.firebase.storage.ktx)
     implementation(libs.car.ui.lib)
     implementation(libs.androidx.scenecore)
+    implementation(libs.androidx.navigation.fragment.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -47,7 +47,8 @@ class HomeManager : AppCompatActivity() {
         navView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.nav_addmenu -> replaceFragment(AddmenuFragment()) // ✅ เปิดหน้าเพิ่มเมนู
-                R.id.nav_menu -> replaceFragment(MenuFragment())
+//                R.id.nav_menu -> replaceFragment(MenuFragment())
+                R.id.nav_addmanager -> replaceFragment(AddManagerFragment())
                 R.id.nav_order-> replaceFragment(OrderFragment())
             }
             drawerLayout.closeDrawer(GravityCompat.START)

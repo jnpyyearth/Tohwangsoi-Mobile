@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
         navView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.nav_home -> replaceFragment(HomeCustomerFragment())
-                R.id.nav_myorder -> replaceFragment(MyorderFragment())
+                R.id.nav_myorder -> replaceFragment(MyOrderFragment())
             }
             drawerLayout.closeDrawer(GravityCompat.START)
             true

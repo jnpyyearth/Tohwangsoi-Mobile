@@ -5,25 +5,67 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/textHome"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="หน้าหลักลูกค้า"
-        android:textSize="20sp"
+    <!-- ส่วน ScrollView สำหรับเนื้อหาด้านบน -->
+    <ScrollView
+        android:id="@+id/scrollContent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="32dp" />
-
-    <Button
-        android:id="@+id/btnStartOrder"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="เริ่มการจอง"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="32dp" />
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/textHome"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="หน้าหลักลูกค้า"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_marginTop="16dp" />
+
+            <ImageButton
+                android:id="@+id/package2000"
+                android:layout_width="248dp"
+                android:layout_height="349dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:scaleType="fitCenter"
+                android:src="@drawable/pack_2000"
+                android:translationX="65dp"
+                android:translationY="60dp"
+                android:contentDescription="2000฿" />
+
+            <ImageButton
+                android:id="@+id/package2500"
+                android:layout_width="248dp"
+                android:layout_height="349dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:scaleType="fitCenter"
+                android:src="@drawable/pack_2500"
+                android:translationX="65dp"
+                android:translationY="100dp"
+                android:contentDescription="2500฿"/>
+
+            <ImageButton
+                android:id="@+id/package3000"
+                android:layout_width="248dp"
+                android:layout_height="349dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:scaleType="fitCenter"
+                android:src="@drawable/pack_3000"
+                android:translationX="65dp"
+                android:translationY="130dp"
+                android:layout_marginBottom="200dp"
+                android:contentDescription="3000฿"/>
+        </LinearLayout>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -10,4 +10,9 @@
     <color name="colorPrimary">#6200EE</color>
     <color name="primary">#FF000000</color>
     <color name="col">#FF5733</color>
+    <color name="gray">#CCCCCC</color>
+    <color name="maroon">#8B0000</color>
+    <color name="dark_red">#6A0000</color>
+    <color name="Sunnyside">#F4D12E</color>
+
 </resources>

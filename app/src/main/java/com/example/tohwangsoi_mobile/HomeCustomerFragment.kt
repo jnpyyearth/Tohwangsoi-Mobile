@@ -22,7 +22,14 @@ class HomeCustomerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.btnStartOrder.setOnClickListener {
+
+        binding.package2000.setOnClickListener{
+            (activity as MainActivity).replaceFragment(UserOrderDataFragment())
+        }
+        binding.package2500.setOnClickListener{
+            (activity as MainActivity).replaceFragment(UserOrderDataFragment())
+        }
+        binding.package3000.setOnClickListener{
             (activity as MainActivity).replaceFragment(UserOrderDataFragment())
         }
 

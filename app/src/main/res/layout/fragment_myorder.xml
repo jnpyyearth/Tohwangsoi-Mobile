@@ -1,17 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MyorderFragment">
+    tools:context=".OrderFragment">
 
-    <!-- TODO: Update blank fragment layout -->
+    <!-- 🔥 หัวข้อ Fragment -->
     <TextView
-        android:layout_width="214dp"
+        android:id="@+id/tvOrderHeader"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hello myorder page (customer)"
+        android:text="รายการออเดอร์ของฉัน"
         android:textSize="20sp"
-        android:translationX="100dp"
-        android:translationY="350dp" />
+        android:textStyle="bold"
+        android:gravity="center"
+        android:padding="16dp"
+        android:layout_marginBottom="30dp"
+        android:background="@android:color/darker_gray"
+        android:textColor="@android:color/white"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-</FrameLayout>
+    <!-- 🔥 RecyclerView แสดง Order -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewOrders"
+        android:layout_width="421dp"
+        android:layout_height="636dp"
+        android:clipToPadding="false"
+        android:padding="16dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvOrderHeader" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

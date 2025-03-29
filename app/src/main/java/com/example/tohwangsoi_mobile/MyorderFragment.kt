@@ -5,55 +5,70 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
+import com.example.tohwangsoi_mobile.adapter.MyorderAdapter
+import com.example.tohwangsoi_mobile.adapter.OnOrderActionListener
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+import com.example.tohwangsoi_mobile.model.Myorder
+import androidx.recyclerview.widget.LinearLayoutManager
+import android.widget.Toast
 
-/**
- * A simple [Fragment] subclass.
- * Use the [MyorderFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class MyorderFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+class MyOrderFragment : Fragment(), OnOrderActionListener {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: MyorderAdapter
+    private lateinit var orderList: ArrayList<Myorder>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_myorder, container, false)
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment MyorderFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            MyorderFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        recyclerView = view.findViewById(R.id.recyclerViewOrders)
+
+        // สร้างรายการจำลอง
+        orderList = arrayListOf(
+            Myorder("1", "Package 2500", "2,500 บาท", "21 มีนาคม 2025", "ชลบุรี", "มหาวิทยาลัยเกษตรศาสตร์ ศรีราชา", "100 คน", isApproved = false),
+            Myorder("2", "Package 3000", "3,000 บาท", "22 มีนาคม 2025", "กรุงเทพ", "อิมแพค เมืองทองธานี", "120 คน", isApproved = true),
+            Myorder("3", "Package 3500", "2,000 บาท", "23 มีนาคม 2025", "เชียงใหม่", "ศูนย์ประชุมเชียงใหม่", "150 คน", isApproved = true)
+        )
+        adapter = MyorderAdapter(orderList, this) // ส่ง listener ไปยัง Adapter
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        recyclerView.adapter = adapter
     }
+
+    // ฟังก์ชันที่ใช้เมื่อคลิกปุ่ม "ยกเลิกออเดอร์"
+
+    override fun onCancelOrder(position: Int) {
+        // แสดงข้อความหรือการทำงานเมื่อกดปุ่ม "ยกเลิก"
+        Toast.makeText(requireContext(), "ยกเลิกออเดอร์ที่ $position", Toast.LENGTH_SHORT).show()
+        orderList[position].isCancell = true  // เปลี่ยนสถานะการยกเลิกใน orderList
+        adapter.notifyItemChanged(position)  // อัปเดต RecyclerView
+    }
+
+    // ฟังก์ชันที่ใช้เมื่อคลิกปุ่ม "จ่ายเงิน"
+    // ฟังก์ชันที่ใช้เมื่อคลิกปุ่ม "จ่ายเงิน"
+    override fun onPayOrder(position: Int) {
+        // ส่งข้อมูลไปยัง PaymentFragment
+        val bundle = Bundle().apply {
+            putString("orderNo", orderList[position].orderNo)
+            putString("packageName", orderList[position].packageName)
+            putString("price", orderList[position].price)
+        }
+
+        val paymentFragment = PaymentFragment()
+        paymentFragment.arguments = bundle
+
+        // เปลี่ยนไปยัง PaymentFragment
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, paymentFragment)
+            .addToBackStack(null)
+            .commit()
+    }
+
 }

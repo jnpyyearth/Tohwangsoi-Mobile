@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.tohwangsoi_mobile.R
@@ -71,11 +72,17 @@ class SectionedMenuSelectAdapter(
 
             // ติ๊ก checkbox ตามรายการที่เลือกไว้ก่อนหน้า
             holder.checkbox.isChecked = selectedItems.contains(item)
-
+            holder.checkbox.isEnabled = canSelectItem(item.Category)
             // ถ้ามีการเปลี่ยนแปลง checkbox
             holder.checkbox.setOnCheckedChangeListener { _, isChecked ->
                 if (isChecked) {
-                    selectedItems.add(item) // เพิ่มใน list
+                    if (selectedItems.filter { it.Category == item.Category }.size >= 2) {
+                        // ถ้ามีการเลือกเกิน 2 รายการในหมวดนี้
+                        holder.checkbox.isChecked = false  // ยกเลิกการเลือก
+                        Toast.makeText(holder.itemView.context, "ไม่สามารถเลือกได้เกิน 2 เมนูในหมวดนี้", Toast.LENGTH_SHORT).show()
+                    } else {
+                        selectedItems.add(item) // เพิ่มใน list
+                    }
                 } else {
                     selectedItems.remove(item) // ลบออก
                 }
@@ -100,5 +107,9 @@ class SectionedMenuSelectAdapter(
         } else {
             originalUrl
         }
+    }
+    private fun canSelectItem(category: String): Boolean {
+        // ตรวจสอบว่าหมวดหมู่นี้สามารถเลือกได้กี่รายการ
+        return (selectedItems.filter { it.Category == category }.size < 2)
     }
 }

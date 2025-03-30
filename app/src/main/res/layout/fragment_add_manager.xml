@@ -7,6 +7,12 @@
     android:padding="16dp"
     tools:context=".AddManagerFragment">
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewmanager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="80dp"/>
+
     <!-- Floating Action Button -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_add_manager"

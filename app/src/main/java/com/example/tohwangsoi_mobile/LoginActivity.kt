@@ -29,6 +29,41 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val sharedPref = getSharedPreferences("user_prefs", MODE_PRIVATE)
+        val isLoggedIn = sharedPref.getBoolean("isLoggedIn", false)
+
+
+        if (isLoggedIn) {
+            val userId = sharedPref.getString("userId", null)
+            if (userId != null) {
+                // ตรวจสอบ email ใน Firestore และไปที่หน้าหลัก
+                db.collection("users").document(userId)
+                    .get()
+                    .addOnSuccessListener { document ->
+                        if (document.exists()) {
+                            val fullName = document.getString("fullName") ?: "Unknown"
+                            val role = document.getString("role") ?: "customer"
+                            val email = sharedPref.getString("email", "")
+
+                            val intent = when (role) {
+                                "manager" -> Intent(this, HomeManager::class.java)
+                                else -> Intent(this, MainActivity::class.java)
+                            }
+
+                            intent.putExtra("USER_NAME", fullName)
+                            intent.putExtra("USER_EMAIL", email)
+                            startActivity(intent)
+                            finish()
+                        }
+                    }
+            }
+        } else {
+            // หากไม่ได้ล็อกอินให้แสดงหน้า Login
+            binding.btnLogin.setOnClickListener {
+                performLogin()
+            }
+        }
+
         auth = FirebaseAuth.getInstance()
         googleSignInClient = GoogleSignIn.getClient(
             this, GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -80,6 +115,55 @@ class LoginActivity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     val userId = auth.currentUser?.uid
                     if (userId != null) {
+                        // ตรวจสอบ email ใน Firestore
+                        db.collection("users").document(userId)
+                            .get()
+                            .addOnSuccessListener { document ->
+                                if (document.exists()) {
+                                    val fullName = document.getString("fullName") ?: "Unknown"
+                                    val role = document.getString("role") ?: "customer"
+
+                                    val intent = when (role) {
+                                        "manager" -> Intent(this, HomeManager::class.java)
+                                        else -> Intent(this, MainActivity::class.java)
+                                    }
+
+                                    intent.putExtra("USER_NAME", fullName)
+                                    intent.putExtra("USER_EMAIL", email)
+                                    startActivity(intent)
+                                    finish()
+                                } else {
+                                    // ถ้าไม่มีข้อมูลใน Firestore
+                                    showToast("User data not found in Firestore")
+                                }
+                            }
+                            .addOnFailureListener { e ->
+                                showToast("Failed to load user info: ${e.message}")
+                            }
+                    }
+                } else {
+                    showToast("Login failed: ${task.exception?.message}")
+                    binding.btnLogin.isEnabled = true
+                    binding.btnLogin.text = getString(R.string.login)
+                    binding.progressBar.visibility = View.GONE
+                }
+            }
+
+
+        //login ค้างไว้  ซนนนนนนนนนนน
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val userId = auth.currentUser?.uid
+                    if (userId != null) {
+                        // บันทึกสถานะการล็อกอิน
+                        val sharedPref = getSharedPreferences("user_prefs", MODE_PRIVATE)
+                        val editor = sharedPref.edit()
+                        editor.putBoolean("isLoggedIn", true)
+                        editor.putString("userId", userId)
+                        editor.putString("email", email)
+                        editor.apply()
+
                         // ตรวจสอบ email ใน Firestore
                         db.collection("users").document(userId)
                             .get()

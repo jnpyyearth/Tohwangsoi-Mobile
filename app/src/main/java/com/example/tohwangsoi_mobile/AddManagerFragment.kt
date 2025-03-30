@@ -8,7 +8,11 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.tohwangsoi_mobile.adapter.ManagerAdapter
 import com.example.tohwangsoi_mobile.databinding.FragmentAddManagerBinding
+import com.example.tohwangsoi_mobile.model.Manager
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -16,10 +20,18 @@ import com.google.firebase.firestore.FieldValue
 
 
 class AddManagerFragment : Fragment() {
+
     private lateinit var binding: FragmentAddManagerBinding
     private lateinit var buttonAdd: FloatingActionButton
     private lateinit var auth: FirebaseAuth
     private lateinit var database: FirebaseFirestore
+
+    //ซนนนนนนนนนนนนนนนนนน
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var managerAdapter: ManagerAdapter
+    private var managerList = mutableListOf<Manager>()
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,8 +47,36 @@ class AddManagerFragment : Fragment() {
             showAddManagerDialog()
         }
 
+        // กำหนดค่า RecyclerView
+        recyclerView = binding.recyclerViewmanager
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        fetchManagersFromFirestore() // โหลดข้อมูลจาก Firestore
+
+
+
+
         return binding.root
     }
+
+    private fun fetchManagersFromFirestore() {
+        database.collection("users")
+            .whereEqualTo("role", "manager") // ดึงข้อมูลเฉพาะ role = "manager"
+            .get()
+            .addOnSuccessListener { result ->
+                managerList.clear()
+                for (document in result) {
+                    val manager = document.toObject(Manager::class.java)
+                    managerList.add(manager)
+                }
+                managerAdapter = ManagerAdapter(managerList)
+                recyclerView.adapter = managerAdapter
+            }
+            .addOnFailureListener { exception ->
+                Toast.makeText(context, "Error: ${exception.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+
 
 
     private fun showAddManagerDialog() {
@@ -74,7 +114,7 @@ class AddManagerFragment : Fragment() {
                                     database.collection("users").document(userId)
                                         .set(user)
                                         .addOnSuccessListener {
-                                            // แสดงข้อความเมื่อบันทึกข้อมูลสำเร็จ
+                                            fetchManagersFromFirestore()
                                             Toast.makeText(context, "User registration successful", Toast.LENGTH_SHORT).show()
                                         }
                                         .addOnFailureListener { e ->

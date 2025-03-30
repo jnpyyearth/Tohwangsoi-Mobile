@@ -68,9 +68,22 @@ class HomeManager : AppCompatActivity() {
     }
 
     private fun logoutUser() {
-        val googleSignInClient = GoogleSignIn.getClient(this, GoogleSignInOptions.DEFAULT_SIGN_IN)
-        FirebaseAuth.getInstance().signOut()
+        val auth = FirebaseAuth.getInstance()
+        val googleSignInClient = GoogleSignIn.getClient(
+            this,
+            GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).build()
+        )
+
+        // ออกจากระบบ Firebase
+        auth.signOut()
+
+        // ออกจากระบบ Google
         googleSignInClient.signOut().addOnCompleteListener {
+            // เคลียร์ข้อมูล SharedPreferences
+            val sharedPref = getSharedPreferences("user_prefs", MODE_PRIVATE)
+            sharedPref.edit().clear().apply()
+
+            // แจ้งเตือนและกลับไปหน้า Login
             Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show()
             val intent = Intent(this, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
